@@ -1,0 +1,107 @@
+<h1>Игровое поле</h1>
+<div class="container mx-md-n5">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">Игровое поле</div>
+                <div class="card-body">
+                    <h5 class="card-title">Выбери ячейку для хода</h5>
+                    <div class="game">
+                        <div class="tableContainer">
+                            <div class="gameTable">
+                                <div ng-repeat="field in fields" class="tableRow">
+                                    <div ng-repeat="cell in field" class="{{cell.class}}" id="{{cell.id}}">
+                                        <div ng-click="clickPlayerMove(cell)" class="boxContent{{cell.letter}}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-header">
+                    Игрок
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Статус игры {{gameStatus}}</h5>
+                    <h5 class="card-title">Игрок "{{currentPlayer.userName}}"</h5>
+                    <h5 class="card-title">Ход "{{playerTurn.userName}}"</h5>
+                </div>
+            </div>
+            <br/>
+            <div class="card">
+                <div class="card-header">
+                    Список игроков
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Игрок</th>
+                                <th scope="col">Позиция</th>
+                                <th scope="col">Символ</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="gamePlayer in gamePlayers">
+                                <td>{{gamePlayer.userName}}</td>
+                                <td>{{gamePlayer.position}}</td>
+                                <td>{{gamePlayer.symbol}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button ng-if="isStartGame()" type="button" class="btn btn-primary" ng-click="clickStartGame()">
+                        Играть
+                    </button>
+                    <button ng-if="canCancelGame()" type="button" class="btn btn-danger" ng-click="clickCancelGame()">
+                        Отмена игры
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">История</div>
+                <div class="card-body">
+                    <h5 class="card-title">Ходы игроков</h5>
+                    <div class="MoveHistory">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Координаты</th>
+                                    <th scope="col">Символ</th>
+                                    <th scope="col">Игрок</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="move in moves">
+                                    <td>{{move.id}}</td>
+                                    <td>row: {{move.cellRow}} column: {{move.cellColumn}}</td>
+                                    <td>{{move.symbol}}</td>
+                                    <td>{{move.playerName}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div ng-if="errorMessage.length > 0" class="alert alert-danger" role="alert">
+                {{errorMessage}}
+            </div>
+        </div>
+
+    </div>
+</div>
+
