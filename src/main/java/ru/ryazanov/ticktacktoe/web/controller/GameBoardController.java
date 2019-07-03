@@ -6,63 +6,67 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.ryazanov.ticktacktoe.model.modelenum.GameStatus;
-import ru.ryazanov.ticktacktoe.service.MockGameBoardService;
+import ru.ryazanov.ticktacktoe.service.interfaces.MoveInGameService;
+import ru.ryazanov.ticktacktoe.service.interfaces.ObserverInGameService;
 import ru.ryazanov.ticktacktoe.to.CreateMoveDTO;
 import ru.ryazanov.ticktacktoe.to.GamePlayerTO;
 import ru.ryazanov.ticktacktoe.to.MoveTO;
 import ru.ryazanov.ticktacktoe.to.PlayerTO;
-
 import java.util.List;
+
+import static ru.ryazanov.ticktacktoe.util.EntityUtil.GAME;
 
 @RestController
 @RequestMapping("/api/game")
 public class GameBoardController {
 
-    private final MockGameBoardService mockGameBoardService;
+    private final ObserverInGameService observerInGameService;
+    private final MoveInGameService moveInGameService;
 
-    public GameBoardController(MockGameBoardService mockGameBoardService) {
-        this.mockGameBoardService = mockGameBoardService;
+    public GameBoardController(ObserverInGameService observerInGameService, MoveInGameService moveInGameService) {
+        this.observerInGameService = observerInGameService;
+        this.moveInGameService = moveInGameService;
     }
 
     @RequestMapping(value = "/current", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public PlayerTO getCurrentPlayer(){
-        return mockGameBoardService.getCurrentPlayer();
+        return observerInGameService.getCurrentPlayer();
     }
 
     @RequestMapping(value = "/creator", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public PlayerTO getPlayerCreator(){
-        return mockGameBoardService.getPlayerCreator(1);
+        return observerInGameService.getPlayerCreator(GAME.getId());
     }
 
     @RequestMapping(value = "/turn", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public PlayerTO getPlayerTurn(){
-        return mockGameBoardService.getPlayerTurn(1);
+        return observerInGameService.getPlayerTurn(GAME.getId(), moveInGameService.getLastTurnPlayer(GAME.getId()));
     }
 
     @RequestMapping(value = "/moves", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MoveTO> getMoves(){
-        return mockGameBoardService.getMoves(1);
+        return moveInGameService.getMoves(GAME.getId());
     }
 
     @RequestMapping(value = "/status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public GameStatus getGameStatus(){
-        return mockGameBoardService.getGameStatus(1);
+        return moveInGameService.getGameStatus(GAME.getId());
     }
 
     @RequestMapping(value = "/game_players", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<GamePlayerTO> getGamePlayers(){
-        return mockGameBoardService.getGamePlayers(1);
+        return moveInGameService.getGamePlayers(GAME.getId());
     }
 
     @RequestMapping(value = "/move", method = RequestMethod.POST)
     public CreateMoveDTO createMove(@RequestBody CreateMoveDTO createMoveDTO){
-        mockGameBoardService.createMove(1, createMoveDTO);
+        moveInGameService.createMove(GAME.getId(), createMoveDTO, observerInGameService.getLoggedPlayer());
         return createMoveDTO;
     }
 
     @RequestMapping(value = "/set_status", method = RequestMethod.POST)
     public GameStatus setGameStatus(@RequestBody GameStatus gameStatus){
-        mockGameBoardService.setGameStatus(1, gameStatus);
+        moveInGameService.setGameStatus(GAME.getId(), gameStatus);
         return gameStatus;
     }
 }

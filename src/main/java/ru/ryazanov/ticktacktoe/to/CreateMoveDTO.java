@@ -5,9 +5,9 @@ import javax.validation.constraints.NotNull;
 
 public class CreateMoveDTO {
     @NotNull
-    int cellRow;
+    private int cellRow;
     @NotNull
-    int cellColumn;
+    private int cellColumn;
 
     public CreateMoveDTO() {
     }
