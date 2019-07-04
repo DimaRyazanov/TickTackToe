@@ -7,12 +7,30 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-public class MoveUtil {
-    public static boolean isFinishGame(List<Move> moves, int size) {
-        List<Position> positions = moves.stream().map(x -> new Position(x.getCellRow(), x.getCellColumn())).collect(Collectors.toList());
+public final class MoveUtil {
 
-        for (Position position :
-                positions) {
+    private MoveUtil() {
+    }
+
+    /**
+     * Find finish game or not.
+     * Select move. Build vertical, horizontal and 2 diagonal
+     * lines on size length. Check if moves contains coordinates
+     * of build finish lines. If true, than it finish game.
+     * Another - game is not finish.
+     *
+     * @param moves - list moves in game.
+     * @param size  - length win line.
+     * @return boolean finish.
+     */
+    public static boolean isFinishGame(final List<Move> moves, final int size) {
+        List<Position> positions = moves
+                .stream()
+                .map(x -> new Position(x.getCellRow(), x.getCellColumn()))
+                .collect(Collectors.toList());
+
+        for (Position position
+                : positions) {
             List<Position> searchPositionRow = new CopyOnWriteArrayList<>();
             List<Position> searchPositionColumn = new CopyOnWriteArrayList<>();
             List<Position> searchPositionDiagonal = new CopyOnWriteArrayList<>();
@@ -25,8 +43,10 @@ public class MoveUtil {
                 searchPositionDiagonalTwo.add(new Position(position.row + i, position.column - i));
             }
 
-            if (positions.containsAll(searchPositionRow) || positions.containsAll(searchPositionColumn)
-                    || positions.containsAll(searchPositionDiagonal) || positions.containsAll(searchPositionDiagonalTwo)){
+            if (positions.containsAll(searchPositionRow)
+                    || positions.containsAll(searchPositionColumn)
+                    || positions.containsAll(searchPositionDiagonal)
+                    || positions.containsAll(searchPositionDiagonalTwo)) {
                 return true;
             }
         }
@@ -34,11 +54,21 @@ public class MoveUtil {
         return false;
     }
 
-    static class Position{
-        private int row;
-        private int column;
+    /**
+     * Auxiliary class for MoveUtil.
+     * Map rowCell and columnCell to Position.
+     */
+    static class Position {
+        /**
+         * row in game board.
+         */
+        private final int row;
+        /**
+         * column in game board.
+         */
+        private final int column;
 
-        Position(int row, int column) {
+        Position(final int row, final int column) {
             this.row = row;
             this.column = column;
         }
@@ -52,12 +82,16 @@ public class MoveUtil {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Position position = (Position) o;
-            return row == position.row &&
-                    column == position.column;
+            return row == position.row
+                    && column == position.column;
         }
 
         @Override

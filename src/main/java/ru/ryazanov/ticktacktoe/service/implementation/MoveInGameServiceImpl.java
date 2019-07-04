@@ -27,55 +27,114 @@ import static ru.ryazanov.ticktacktoe.util.EntityUtil.GAME_SIZE;
 @Service
 public class MoveInGameServiceImpl implements MoveInGameService {
 
-    private GameService gameService;
-    private MoveService moveService;
-    private GamePlayerService gamePlayerService;
+    /**
+     * GameService - work with game repository.
+     */
+    private final GameService gameService;
 
-    public MoveInGameServiceImpl(GameService gameService, MoveService moveService, GamePlayerService gamePlayerService) {
+    /**
+     * MoveService - work with move repository.
+     */
+    private final MoveService moveService;
+
+    /**
+     * GamePlayerService - work with gamePlayer repository.
+     */
+    private final GamePlayerService gamePlayerService;
+
+    /**
+     * Constructor MoveInGameServiceImpl.
+     * Inject implementation GameService, MoveService, GamePlayerService.
+     * @param gameService - impl GameService.
+     * @param moveService - impl MoveService.
+     * @param gamePlayerService - impl GamePlayerService.
+     */
+    public MoveInGameServiceImpl(final GameService gameService,
+                                 final MoveService moveService,
+                                 final GamePlayerService gamePlayerService) {
         this.gameService = gameService;
         this.moveService = moveService;
         this.gamePlayerService = gamePlayerService;
     }
 
-
+    /**
+     * Get status game by id.
+     * @param gameId - int id game.
+     * @return enum GameStatus.
+     */
     @Override
-    public GameStatus getGameStatus(int gameId) {
+    public GameStatus getGameStatus(final int gameId) {
         return gameService.get(gameId).getStatus();
     }
 
+    /**
+     * Set new status game by id.
+     * @param gameId - int id game.
+     * @param gameStatus - new status game.
+     */
     @Override
-    public void setGameStatus(int gameId, GameStatus gameStatus) {
+    public void setGameStatus(final int gameId, final GameStatus gameStatus) {
         Game currentGame = gameService.get(gameId);
         currentGame.setStatus(gameStatus);
         gameService.save(currentGame);
     }
 
+    /**
+     * get player, who move last in game by id.
+     * @param gameId - int id game.
+     * @return Player object.
+     */
     @Override
-    public Player getLastTurnPlayer(int gameId) {
-        Optional<Move> lastMove = moveService.findByGame(gameService.get(gameId)).stream().max(Comparator.comparing(Move::getCreated));
+    public Player getLastTurnPlayer(final int gameId) {
+        Optional<Move> lastMove = moveService.findByGame(gameService.get(gameId))
+                .stream().max(Comparator.comparing(Move::getCreated));
         return lastMove.map(Move::getPlayer).orElse(null);
     }
 
+    /**
+     * get list GamePlayersTO by game id.
+     * @param gameId - int id game.
+     * @return List GamePlayerTO.
+     */
     @Override
-    public List<GamePlayerTO> getGamePlayers(int gameId) {
+    public List<GamePlayerTO> getGamePlayers(final int gameId) {
         return gamePlayerService.getAllByGame(gameService.get(gameId)).stream()
-                .map(x -> new GamePlayerTO(x.getPlayer().getUserName(), x.getPosition(), x.getSymbol()))
-                .sorted(Comparator.comparing(GamePlayerTO::getPosition)).collect(Collectors.toList());
+                .map(x -> new GamePlayerTO(x.getPlayer().getUserName(),
+                        x.getPosition(), x.getSymbol()))
+                .sorted(Comparator.comparing(GamePlayerTO::getPosition))
+                .collect(Collectors.toList());
     }
 
+    /**
+     * get list MoveTO by game id.
+     * @param gameId - int id game.
+     * @return List MoveTO.
+     */
     @Override
-    public List<MoveTO> getMoves(int gameId) {
+    public List<MoveTO> getMoves(final int gameId) {
         Map<Integer, Character> settings = gamePlayerService.getAllByGame(gameService.get(gameId))
                 .stream().collect(Collectors.toMap(GamePlayer::getId, GamePlayer::getSymbol));
         List<Move> moves = moveService.findByGame(gameService.get(gameId));
-        return moves.stream().map(x -> new MoveTO(x.getId(), x.getCellRow(), x.getCellColumn(), settings.get(x.getPlayer().getId()), x.getPlayer().getUserName()))
+        return moves.stream().map(x -> new MoveTO(x.getId(), x.getCellRow(), x.getCellColumn(),
+                settings.get(x.getPlayer().getId()), x.getPlayer().getUserName()))
                 .sorted(Comparator.comparingInt(MoveTO::getId)).collect(Collectors.toList());
     }
 
+    /**
+     * Create new move player.
+     * @param gameId - int id game.
+     * @param createMoveDTO - new move.
+     * @param player - player who move.
+     */
     @Override
-    public void createMove(int gameId, CreateMoveDTO createMoveDTO, Player player) {
+    public void createMove(final int gameId,
+                           final CreateMoveDTO createMoveDTO, final Player player) {
         Game currentGame = gameService.get(gameId);
-        moveService.save(new Move(gameService.get(gameId), player, createMoveDTO.getCellRow(), createMoveDTO.getCellColumn(), LocalDateTime.now()));
+        moveService.save(new Move(gameService.get(gameId),
+                player,
+                createMoveDTO.getCellRow(),
+                createMoveDTO.getCellColumn(),
+                LocalDateTime.now()));
         List<Move> moves = moveService.findByGameAndPlayer(currentGame, player);
         boolean isFinish = MoveUtil.isFinishGame(moves, GAME_SIZE);
 
