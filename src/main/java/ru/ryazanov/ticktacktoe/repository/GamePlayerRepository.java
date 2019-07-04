@@ -9,5 +9,11 @@ import java.util.List;
 
 @Repository
 public interface GamePlayerRepository extends JpaRepository<GamePlayer, Integer> {
+    /**
+     * Jpa Repository for work with GamePlayer entities.
+     * @param game - game where found gamePlayers entities.
+     * @return List of GamePlayer. Need to registration game status and
+     * defenition next turn.
+     */
     List<GamePlayer> findByGame(Game game);
 }
