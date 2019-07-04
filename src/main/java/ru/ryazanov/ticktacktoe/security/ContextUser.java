@@ -7,15 +7,26 @@ import com.google.common.collect.ImmutableSet;
 
 
 public class ContextUser extends User {
+    /**
+     * Player for user context.
+     */
     private final Player player;
 
-    ContextUser(Player player) {
+    /**
+     * Create context user, that use for security work.
+     * @param player - entry user player
+     */
+    ContextUser(final Player player) {
         super(player.getUserName(), player.getPassword(),
                 true, true, true, true,
                 ImmutableSet.of(new SimpleGrantedAuthority("create")));
         this.player = player;
     }
 
+    /**
+     * get logged user(Player entity).
+     * @return Player player.
+     */
     public Player getPlayer() {
         return player;
     }
