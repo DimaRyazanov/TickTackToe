@@ -13,23 +13,43 @@ import ru.ryazanov.ticktacktoe.security.UserDetailsServiceImpl;
 @Configuration
 @EnableWebSecurity
 public class ConfigSecurity extends WebSecurityConfigurerAdapter {
-
+    /**
+     * Repo of Player entities.
+     */
     private final PlayerRepository playerRepository;
 
+    /**
+     * Inject playerRepository using constructor.
+     *
+     * @param playerRepository - repository of players.
+     */
     @Autowired
-    public ConfigSecurity(PlayerRepository playerRepository) {
+    public ConfigSecurity(final PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
     }
 
+    /**
+     * Configure global security.
+     * Need more reads about Spring security.
+     *
+     * @param auth - manager authentications.
+     * @throws Exception - can throw Exception, if details bad.
+     */
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(new UserDetailsServiceImpl(playerRepository))
+    public void configureGlobal(final AuthenticationManagerBuilder auth)
+            throws Exception {
+        auth.userDetailsService(new UserDetailsServiceImpl(playerRepository))
                 .passwordEncoder(new BCryptPasswordEncoder());
     }
 
+    /**
+     * Config http security with fields Player.
+     * Need more reads about Spring security.
+     * @param http - HttpSecurity object.
+     * @throws Exception - can throw Exception, if details bad.
+     */
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(final HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .anyRequest().authenticated()
