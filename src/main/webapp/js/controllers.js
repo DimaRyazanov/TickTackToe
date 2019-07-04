@@ -2,13 +2,63 @@ var gameControllers = angular.module('gameControllers', []);
 
 gameControllers.controller('gameController', ['$scope', '$http', '$interval',
     function (scope, http, interval) {
-        initializationFields();
-        getCurrentPlayer();
-        getCreator();
-        getPlayerTurn();
-        getMoves();
-        getGamePlayers();
+
         getGameStatus();
+
+        if (isEndGame()){
+            initFirstData();
+        }else{
+            initFirstData();
+            getCreator();
+            getCurrentPlayer();
+            getPlayerTurn();
+
+            var timerUpdate = interval(function () {
+                if (isRegistrationGame()) {
+                    getGamePlayers();
+                    getGameStatus();
+                }
+                if (isProgressGame()) {
+                    getPlayerTurn();
+                    getMoves();
+                    getGameStatus();
+                }
+                if (isEndGame()) {
+                    stopTimer();
+                }
+            }, 500);
+        }
+
+        function initFirstData() {
+            initializationFields();
+            getMoves();
+            getGamePlayers();
+            getGameStatus();
+        }
+
+        function isEndGame() {
+            var status = (scope.gameStatus === "FINISH" || scope.gameStatus === "CANCEL" || scope.gameStatus === "ERROR");
+            scope.isEndGame = status;
+            return status;
+        }
+
+        function isRegistrationGame() {
+            var status = scope.gameStatus === "REGISTRATION";
+            scope.isRegistrationGame = status;
+            return status;
+        }
+
+        function isProgressGame() {
+            var status = scope.gameStatus === "PROGRESS";
+            scope.isProgressGame = status;
+            return status;
+        }
+
+        function isStartGame() {
+            var status = (scope.gameStatus === "REGISTRATION" || scope.gameStatus === "PROGRESS");
+            scope.isStartGame = status;
+            return status;
+        }
 
         function getCurrentPlayer() {
             http.get('/api/game/current')
@@ -17,7 +67,7 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load current user " + response.status;
-                    setErrorStatus();
+                    setStatus("ERROR");
                 });
         }
 
@@ -28,7 +78,7 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load player turn " + response.status;
-                    setErrorStatus();
+                    setStatus("ERROR");
                 });
         }
 
@@ -42,7 +92,7 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load moves " + response.status;
-                    setErrorStatus();
+                    setStatus("ERROR");
                 });
         }
 
@@ -73,7 +123,7 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load creator game " + response.status;
-                    setErrorStatus();
+                    setStatus("ERROR");
                 });
         }
 
@@ -85,7 +135,7 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load players in game " + response.status;
-                    setErrorStatus();
+                    setStatus("ERROR");
                 });
         }
 
@@ -96,28 +146,31 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load game status " + response.status;
-                    setErrorStatus();
+                    setStatus("ERROR");
                 });
         }
 
-        function setErrorStatus() {
-            http.post('/api/game/set_status', JSON.stringify("ERROR"), {headers: {'Content-Type': 'application/json; charset=UTF-8'}})
-                .then(function successCallback(response) {
-                    getGameStatus();
-                });
+        function setStatus(status) {
+            http.post('/api/game/set_status', JSON.stringify(status), {headers: {'Content-Type': 'application/json; charset=UTF-8'}});
         }
 
-        scope.isStartGame = function () {
-            return (scope.gameStatus === "REGISTRATION") && (scope.creator.id === scope.currentPlayer.id) && scope.isMoreOnePlayer;
+        scope.canStartGame = function () {
+            if (isRegistrationGame())
+                return (scope.creator.id === scope.currentPlayer.id) && scope.isMoreOnePlayer;
+            else
+                return false;
         };
 
         scope.canCancelGame = function () {
-            return (scope.gameStatus === "REGISTRATION" || scope.gameStatus === "PROGRESS") && (scope.creator.id === scope.currentPlayer.id);
+            if (isStartGame())
+                return scope.creator.id === scope.currentPlayer.id;
+            else
+                return false;
         };
 
         scope.clickPlayerMove = function (cell) {
             getPlayerTurn();
-            if (scope.gameStatus === "PROGRESS") {
+            if (isProgressGame()) {
                 if (cell.letter === "") {
                     if (scope.currentPlayer.id === scope.playerTurn.id) {
                         var cellRow = parseInt(cell.id.charAt(0));
@@ -131,7 +184,7 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
                             })
                             .catch(function errorCallback(response) {
                                 scope.errorMessage = "Can't send the move " + response.status;
-                                setErrorStatus();
+                                setStatus("ERROR");
                             });
 
                         getGameStatus();
@@ -141,48 +194,30 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
         };
 
         scope.clickStartGame = function () {
-            if (scope.gameStatus === "REGISTRATION") {
-                http.post(
-                    '/api/game/set_status',
-                    JSON.stringify("PROGRESS"),
-                    {headers: {'Content-Type': 'application/json; charset=UTF-8'}})
+            if (isRegistrationGame()) {
+                setStatus("PROGRESS")
                     .then(function successCallback(response) {
                         getGameStatus();
                     })
                     .catch(function errorCallback(response) {
                         scope.errorMessage = "Can't start game " + response.status;
-                        setErrorStatus();
+                        setStatus("ERROR");
                     });
             }
         };
 
         scope.clickCancelGame = function () {
-            if (scope.gameStatus === "REGISTRATION" || scope.gameStatus === "PROGRESS") {
-                http.post('/api/game/set_status', JSON.stringify("CANCEL"), {headers: {'Content-Type': 'application/json; charset=UTF-8'}})
+            if (isStartGame()) {
+                setStatus("CANCEL")
                     .then(function successCallback(response) {
                         getGameStatus();
                     })
                     .catch(function errorCallback(response) {
                         scope.errorMessage = "Can't cancel game " + response.status;
-                        setErrorStatus();
+                        setStatus("ERROR");
                     });
             }
         };
-
-        var timerUpdate = interval(function () {
-            if (scope.gameStatus === "REGISTRATION") {
-                getGamePlayers();
-                getGameStatus();
-            }
-            if (scope.gameStatus === "PROGRESS") {
-                getPlayerTurn();
-                getMoves();
-                getGameStatus();
-            }
-            if (scope.gameStatus === "FINISH" || scope.gameStatus === "CANCEL" || scope.gameStatus === "ERROR") {
-                stopTimer();
-            }
-        }, 500);
 
         function stopTimer() {
             interval.cancel(timerUpdate);
