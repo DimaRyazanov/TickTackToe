@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.ryazanov.ticktacktoe.model.modelenum.GameStatus;
 import ru.ryazanov.ticktacktoe.service.interfaces.MoveInGameService;
 import ru.ryazanov.ticktacktoe.service.interfaces.ObserverInGameService;
-import ru.ryazanov.ticktacktoe.to.CreateMoveDTO;
+import ru.ryazanov.ticktacktoe.to.CreateMoveTO;
 import ru.ryazanov.ticktacktoe.to.GamePlayerTO;
 import ru.ryazanov.ticktacktoe.to.MoveTO;
 import ru.ryazanov.ticktacktoe.to.PlayerTO;
@@ -59,9 +59,9 @@ public class GameBoardController {
     }
 
     @RequestMapping(value = "/move", method = RequestMethod.POST)
-    public CreateMoveDTO createMove(@RequestBody CreateMoveDTO createMoveDTO){
-        moveInGameService.createMove(GAME.getId(), createMoveDTO, observerInGameService.getLoggedPlayer());
-        return createMoveDTO;
+    public CreateMoveTO createMove(@RequestBody CreateMoveTO createMoveTO){
+        moveInGameService.createMove(GAME.getId(), createMoveTO, observerInGameService.getLoggedPlayer());
+        return createMoveTO;
     }
 
     @RequestMapping(value = "/set_status", method = RequestMethod.POST)

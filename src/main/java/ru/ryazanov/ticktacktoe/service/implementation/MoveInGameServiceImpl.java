@@ -11,7 +11,7 @@ import ru.ryazanov.ticktacktoe.service.interfaces.repo.GameService;
 import ru.ryazanov.ticktacktoe.service.interfaces.MoveInGameService;
 import ru.ryazanov.ticktacktoe.service.interfaces.repo.MoveService;
 import ru.ryazanov.ticktacktoe.service.util.MoveUtil;
-import ru.ryazanov.ticktacktoe.to.CreateMoveDTO;
+import ru.ryazanov.ticktacktoe.to.CreateMoveTO;
 import ru.ryazanov.ticktacktoe.to.GamePlayerTO;
 import ru.ryazanov.ticktacktoe.to.MoveTO;
 
@@ -123,17 +123,17 @@ public class MoveInGameServiceImpl implements MoveInGameService {
     /**
      * Create new move player.
      * @param gameId - int id game.
-     * @param createMoveDTO - new move.
+     * @param createMoveTO - new move.
      * @param player - player who move.
      */
     @Override
     public void createMove(final int gameId,
-                           final CreateMoveDTO createMoveDTO, final Player player) {
+                           final CreateMoveTO createMoveTO, final Player player) {
         Game currentGame = gameService.get(gameId);
         moveService.save(new Move(gameService.get(gameId),
                 player,
-                createMoveDTO.getCellRow(),
-                createMoveDTO.getCellColumn(),
+                createMoveTO.getCellRow(),
+                createMoveTO.getCellColumn(),
                 LocalDateTime.now()));
         List<Move> moves = moveService.findByGameAndPlayer(currentGame, player);
         boolean isFinish = MoveUtil.isFinishGame(moves, GAME_SIZE);
