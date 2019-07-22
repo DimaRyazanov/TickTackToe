@@ -24,21 +24,21 @@ public final class EntityUtil {
      * Game for test (id = 1, players = 'RYAZAN, SVLOYSO').
      */
     public static final Game GAME = new Game(LocalDateTime.now(),
-            EntityUtil.PLAYER_SVLOYSO, GameStatus.REGISTRATION, 2);
+            EntityUtil.PLAYER_RYAZAN, GameStatus.REGISTRATION, 2);
 
     /**
      * player SVLOYSO in Game (id = 1), position = 1, symbol 'X'.
      * Tests.
      */
     public static final GamePlayer FIRST_GAME_PLAYER =
-            new GamePlayer(GAME, PLAYER_SVLOYSO, 1, 'X');
+            new GamePlayer(GAME, PLAYER_RYAZAN, 1, 'X');
 
     /**
      * player RYAZAN in Game (id = 1), position = 2, symbol 'O'.
      * Tests.
      */
     public static final GamePlayer SECOND_GAME_PLAYER =
-            new GamePlayer(GAME, PLAYER_RYAZAN, 2, 'O');
+            new GamePlayer(GAME, PLAYER_SVLOYSO, 2, 'O');
 
     /**
      * Hardcode board game size.

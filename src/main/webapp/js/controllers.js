@@ -1,6 +1,7 @@
-var gameControllers = angular.module('gameControllers', []);
+var gameController = angular.module('gameController', []);
+var roomController = angular.module('roomController', []);
 
-gameControllers.controller('gameController', ['$scope', '$http', '$interval',
+gameController.controller('gameController', ['$scope', '$http', '$interval',
     function (scope, http, interval) {
 
         getGameStatus();
@@ -223,3 +224,18 @@ gameControllers.controller('gameController', ['$scope', '$http', '$interval',
             interval.cancel(timerUpdate);
         }
     }]);
+
+roomController.controller('roomController', ['$scope', '$http', '$interval',
+    function (scope, http, interval) {
+        getRegistrationGames();
+
+        function getRegistrationGames() {
+            http.get('/api/room/games')
+                .then(function onSuccess(response) {
+                    scope.games = response.data;
+                })
+                .catch(function onError(response) {
+                    scope.errorMessage = "Failed to load game status " + response.status;
+                });
+        }
+}]);

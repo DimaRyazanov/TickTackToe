@@ -1,4 +1,4 @@
-var applicationRoute = angular.module('applicationRoute', ['ngRoute', 'gameControllers']);
+var applicationRoute = angular.module('applicationRoute', ['ngRoute', 'gameController', 'roomController']);
 
 applicationRoute.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
@@ -6,6 +6,10 @@ applicationRoute.config(['$routeProvider', '$locationProvider', function ($route
         when('/game', {
             templateUrl: '../templates/gameBoard.html',
             controller: 'gameController'
+        })
+        .when('/room',{
+            templateUrl: '../templates/room.html',
+            controller: 'roomController'
         })
         .otherwise({
         redirectTo: '/',

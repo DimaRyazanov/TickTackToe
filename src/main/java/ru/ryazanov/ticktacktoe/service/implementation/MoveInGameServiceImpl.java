@@ -1,6 +1,7 @@
 package ru.ryazanov.ticktacktoe.service.implementation;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.ryazanov.ticktacktoe.model.Game;
 import ru.ryazanov.ticktacktoe.model.GamePlayer;
 import ru.ryazanov.ticktacktoe.model.Move;
@@ -73,6 +74,7 @@ public class MoveInGameServiceImpl implements MoveInGameService {
      * @param gameStatus - new status game.
      */
     @Override
+    @Transactional
     public void setGameStatus(final int gameId, final GameStatus gameStatus) {
         Game currentGame = gameService.get(gameId);
         currentGame.setStatus(gameStatus);
@@ -127,6 +129,7 @@ public class MoveInGameServiceImpl implements MoveInGameService {
      * @param player - player who move.
      */
     @Override
+    @Transactional
     public void createMove(final int gameId,
                            final CreateMoveTO createMoveTO, final Player player) {
         Game currentGame = gameService.get(gameId);

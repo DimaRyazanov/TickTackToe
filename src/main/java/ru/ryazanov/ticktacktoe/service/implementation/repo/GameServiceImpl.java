@@ -2,8 +2,11 @@ package ru.ryazanov.ticktacktoe.service.implementation.repo;
 
 import org.springframework.stereotype.Service;
 import ru.ryazanov.ticktacktoe.model.Game;
+import ru.ryazanov.ticktacktoe.model.modelenum.GameStatus;
 import ru.ryazanov.ticktacktoe.repository.GameRepository;
 import ru.ryazanov.ticktacktoe.service.interfaces.repo.GameService;
+
+import java.util.List;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -37,5 +40,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public void save(final Game game) {
         gameRepository.save(game);
+    }
+
+    @Override
+    public List<Game> getGamesByStatus(GameStatus gameStatus) {
+        return gameRepository.findByStatus(gameStatus);
     }
 }

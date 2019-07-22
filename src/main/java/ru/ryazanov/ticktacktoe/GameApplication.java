@@ -43,9 +43,7 @@ public class GameApplication {
             playerRepository.save(PLAYER_RYAZAN);
 
             gameRepository.save(GAME);
-
             gamePlayerRepository.save(FIRST_GAME_PLAYER);
-            gamePlayerRepository.save(SECOND_GAME_PLAYER);
 
         };
     }

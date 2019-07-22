@@ -1,6 +1,9 @@
 package ru.ryazanov.ticktacktoe.service.interfaces.repo;
 
 import ru.ryazanov.ticktacktoe.model.Game;
+import ru.ryazanov.ticktacktoe.model.modelenum.GameStatus;
+
+import java.util.List;
 
 public interface GameService {
     /**
@@ -15,4 +18,6 @@ public interface GameService {
      * @param game - saved game.
      */
     void save(Game game);
+
+    List<Game> getGamesByStatus(GameStatus gameStatus);
 }

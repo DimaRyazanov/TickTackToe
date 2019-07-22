@@ -1,0 +1,82 @@
+<div class="container mx-md-auto">
+    <br/>
+    <h1>Комната</h1>
+    <br/>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">Список доступных игр</div>
+                <div class="card-body">
+                    <h5>Набор игроков</h5>
+                    <div class="listGames">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Дата создания</th>
+                                    <th scope="col">Хост</th>
+                                    <th scope="col">Кол-во игроков</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="game in games">
+                                    <td>{{game.id}}</td>
+                                    <td>{{game.created | date: 'dd.MM.yyyy HH:mm'}}</td>
+                                    <td>{{game.playerCreator.userName}}</td>
+                                    <td>{{game.countPlayers}}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary" ng-click="joinGame()">
+                                            Вступить
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card">
+                    <div class="card-header">
+                        История моих игр
+                    </div>
+                    <div class="card-body">
+                        <h5>Законченные игры</h5>
+                        <div class="historyMyGames">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Дата</th>
+                                            <th scope="col">Действие</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="game in gameHistory">
+                                            <td>{{game.id}}</td>
+                                            <td>{{game.created | date: 'dd.MM.yyyy'}}</td>
+                                            <td>
+                                            <button type="button" class="btn btn-primary" ng-click="seeHistory()">
+                                                Результат
+                                            </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
