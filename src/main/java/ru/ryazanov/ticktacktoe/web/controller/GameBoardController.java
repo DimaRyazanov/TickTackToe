@@ -12,6 +12,7 @@ import ru.ryazanov.ticktacktoe.to.CreateMoveTO;
 import ru.ryazanov.ticktacktoe.to.GamePlayerTO;
 import ru.ryazanov.ticktacktoe.to.MoveTO;
 import ru.ryazanov.ticktacktoe.to.PlayerTO;
+
 import java.util.List;
 
 import static ru.ryazanov.ticktacktoe.util.EntityUtil.GAME;
@@ -20,52 +21,116 @@ import static ru.ryazanov.ticktacktoe.util.EntityUtil.GAME;
 @RequestMapping("/api/game")
 public class GameBoardController {
 
+    /**
+     * Service that get info about game.
+     */
     private final ObserverInGameService observerInGameService;
+
+    /**
+     * Service that get info moves in game.
+     */
     private final MoveInGameService moveInGameService;
 
-    public GameBoardController(ObserverInGameService observerInGameService, MoveInGameService moveInGameService) {
+    /**
+     * Inject service implementation.
+     *
+     * @param observerInGameService - Impl ObserverInGameService.
+     * @param moveInGameService     - Impl MoveInGameService.
+     */
+    public GameBoardController(final ObserverInGameService observerInGameService,
+                               final MoveInGameService moveInGameService) {
         this.observerInGameService = observerInGameService;
         this.moveInGameService = moveInGameService;
     }
 
-    @RequestMapping(value = "/current", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public PlayerTO getCurrentPlayer(){
+    /**
+     * Api: get current player.
+     *
+     * @return PlayerTO current player.
+     */
+    @RequestMapping(value = "/current", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public PlayerTO getCurrentPlayer() {
         return observerInGameService.getCurrentPlayer();
     }
 
-    @RequestMapping(value = "/creator", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public PlayerTO getPlayerCreator(){
+    /**
+     * Api: get player who create game.
+     *
+     * @return PlayerTO who create game.
+     */
+    @RequestMapping(value = "/creator", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public PlayerTO getPlayerCreator() {
         return observerInGameService.getPlayerCreator(GAME.getId());
     }
 
-    @RequestMapping(value = "/turn", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public PlayerTO getPlayerTurn(){
-        return observerInGameService.getPlayerTurn(GAME.getId(), moveInGameService.getLastTurnPlayer(GAME.getId()));
+    /**
+     * Api: who move now in game.
+     *
+     * @return PlayerTO player who move.
+     */
+    @RequestMapping(value = "/turn", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public PlayerTO getPlayerTurn() {
+        return observerInGameService.getPlayerTurn(GAME.getId(),
+                moveInGameService.getLastTurnPlayer(GAME.getId()));
     }
 
-    @RequestMapping(value = "/moves", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MoveTO> getMoves(){
+    /**
+     * Api: get all moves in game.
+     *
+     * @return List<MoveTO> by game id.
+     */
+    @RequestMapping(value = "/moves", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MoveTO> getMoves() {
         return moveInGameService.getMoves(GAME.getId());
     }
 
-    @RequestMapping(value = "/status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public GameStatus getGameStatus(){
+    /**
+     * Api: status game.
+     *
+     * @return GameStatus by game id.
+     */
+    @RequestMapping(value = "/status", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public GameStatus getGameStatus() {
         return moveInGameService.getGameStatus(GAME.getId());
     }
 
-    @RequestMapping(value = "/game_players", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<GamePlayerTO> getGamePlayers(){
+    /**
+     * Api: List players in game.
+     *
+     * @return List<GamePlayerTO> by game id.
+     */
+    @RequestMapping(value = "/game_players", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<GamePlayerTO> getGamePlayers() {
         return moveInGameService.getGamePlayers(GAME.getId());
     }
 
+    /**
+     * Api: create player move.
+     *
+     * @param createMoveTO - player move from client.
+     * @return this move.
+     */
     @RequestMapping(value = "/move", method = RequestMethod.POST)
-    public CreateMoveTO createMove(@RequestBody CreateMoveTO createMoveTO){
-        moveInGameService.createMove(GAME.getId(), createMoveTO, observerInGameService.getLoggedPlayer());
+    public CreateMoveTO createMove(@RequestBody final CreateMoveTO createMoveTO) {
+        moveInGameService.createMove(GAME.getId(), createMoveTO,
+                observerInGameService.getLoggedPlayer());
         return createMoveTO;
     }
 
+    /**
+     * Api: set new status game. For example 'ERROR'.
+     *
+     * @param gameStatus - new status game.
+     * @return this status.
+     */
     @RequestMapping(value = "/set_status", method = RequestMethod.POST)
-    public GameStatus setGameStatus(@RequestBody GameStatus gameStatus){
+    public GameStatus setGameStatus(@RequestBody final GameStatus gameStatus) {
         moveInGameService.setGameStatus(GAME.getId(), gameStatus);
         return gameStatus;
     }
