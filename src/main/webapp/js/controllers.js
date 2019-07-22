@@ -227,15 +227,36 @@ gameController.controller('gameController', ['$scope', '$http', '$interval',
 
 roomController.controller('roomController', ['$scope', '$http', '$interval',
     function (scope, http, interval) {
+        getCurrentPlayer();
         getRegistrationGames();
 
         function getRegistrationGames() {
             http.get('/api/room/games')
                 .then(function onSuccess(response) {
                     scope.games = response.data;
+                    scope.isHost = false;
+                    angular.forEach(scope.games, function (game) {
+                        if (game.playerCreator.id === scope.currentPlayer.id){
+                            scope.isHost = true;
+                        }
+                    })
                 })
                 .catch(function onError(response) {
-                    scope.errorMessage = "Failed to load game status " + response.status;
+                    scope.errorMessage = "Failed to load current games " + response.status;
                 });
+        }
+
+        function getCurrentPlayer() {
+            http.get('/api/game/current')
+                .then(function onSuccess(response) {
+                    scope.currentPlayer = response.data;
+                })
+                .catch(function onError(response) {
+                    scope.errorMessage = "Failed to load current user " + response.status;
+                });
+        }
+
+        scope.joinGame = function joinGame(gameId) {
+            http.post('/api/room/join_game', JSON.stringify(gameId), {headers: {'Content-Type': 'application/json; charset=UTF-8'}});
         }
 }]);

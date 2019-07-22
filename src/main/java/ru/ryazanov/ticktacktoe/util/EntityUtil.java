@@ -7,6 +7,8 @@ import ru.ryazanov.ticktacktoe.model.Player;
 import ru.ryazanov.ticktacktoe.model.modelenum.GameStatus;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class EntityUtil {
     /**
@@ -44,6 +46,16 @@ public final class EntityUtil {
      * Hardcode board game size.
      */
     public static final int GAME_SIZE = 3;
+
+    public static final int MIN_PLAYERS = 2;
+
+    public static final Map<Integer, Character> SYMBOLS = new ConcurrentHashMap<>();
+    static {
+        SYMBOLS.put(1, 'X');
+        SYMBOLS.put(2, 'O');
+        SYMBOLS.put(3, 'Y');
+        SYMBOLS.put(4, 'I');
+    }
 
     /**
      * Hide constructor.

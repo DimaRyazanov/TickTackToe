@@ -2,6 +2,7 @@ package ru.ryazanov.ticktacktoe.service.interfaces.repo;
 
 import ru.ryazanov.ticktacktoe.model.Game;
 import ru.ryazanov.ticktacktoe.model.GamePlayer;
+import ru.ryazanov.ticktacktoe.model.Player;
 
 import java.util.List;
 
@@ -12,4 +13,8 @@ public interface GamePlayerService {
      * @return list GamePlayer
      */
     List<GamePlayer> getAllByGame(Game game);
+    boolean isFullGame(Game game);
+    int getLastPosition(Game game);
+    boolean isPlayerInGame(Game game, Player player);
+    void add(GamePlayer gamePlayer);
 }

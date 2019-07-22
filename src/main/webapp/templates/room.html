@@ -1,12 +1,18 @@
 <div class="container mx-md-auto">
     <br/>
-    <h1>Комната</h1>
+    <h1>Комната (Крестики-Нолики)</h1>
     <br/>
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">Список доступных игр</div>
                 <div class="card-body">
+                    <div ng-if="isHost">
+                        <div class="alert alert-success" role="alert">
+                            Вы уже создали игру!
+                        </div>
+                    </div>
+                    <br />
                     <h5>Набор игроков</h5>
                     <div class="listGames">
                         <div class="table-responsive">
@@ -27,7 +33,7 @@
                                     <td>{{game.playerCreator.userName}}</td>
                                     <td>{{game.countPlayers}}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary" ng-click="joinGame()">
+                                        <button ng-if="!isHost" type="button" class="btn btn-primary" ng-click="joinGame(game.id)">
                                             Вступить
                                         </button>
                                     </td>

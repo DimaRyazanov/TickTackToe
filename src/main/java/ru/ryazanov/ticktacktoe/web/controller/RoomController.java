@@ -1,6 +1,7 @@
 package ru.ryazanov.ticktacktoe.web.controller;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,13 @@ public class RoomController {
     }
 
     @RequestMapping(value = "/games", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Game> getRegistrationGames(){
+    public List<Game> getRegistrationGames() {
         return gameService.getRegistrationGames();
+    }
+
+    @RequestMapping(value = "/join_game", method = RequestMethod.POST)
+    public String joinToGame(@RequestBody final int gameId) {
+        gameService.joinToGame(gameId);
+        return "redirect:/room";
     }
 }
