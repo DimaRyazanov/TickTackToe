@@ -13,6 +13,7 @@ import ru.ryazanov.ticktacktoe.service.interfaces.repo.PlayerService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.ryazanov.ticktacktoe.util.EntityUtil.*;
 
@@ -57,11 +58,6 @@ public class RoomGameServiceImpl implements RoomGameService {
     }
 
     @Override
-    public Game playerInGame() {
-        return gamePlayerService.playerInAnyGame(playerService.getLoggedPlayer());
-    }
-
-    @Override
     public Game createNewGame() {
         Game game = new Game(LocalDateTime.now(), playerService.getLoggedPlayer(), GameStatus.REGISTRATION, MIN_PLAYERS);
         gameService.save(game);
@@ -72,6 +68,15 @@ public class RoomGameServiceImpl implements RoomGameService {
     @Override
     public Game get(Integer gameId) {
         return gameService.get(gameId);
+    }
+
+    @Override
+    public List<Game> getFinishedGames() {
+        return gamePlayerService.getAllByPlayer(playerService.getLoggedPlayer())
+                .stream()
+                .filter(x -> x.getGame().getStatus() == GameStatus.FINISH)
+                .map(GamePlayer::getGame)
+                .collect(Collectors.toList());
     }
 
 

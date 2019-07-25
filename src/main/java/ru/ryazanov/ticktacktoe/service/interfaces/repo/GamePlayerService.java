@@ -18,4 +18,5 @@ public interface GamePlayerService {
     boolean isPlayerInGame(Game game, Player player);
     void add(GamePlayer gamePlayer);
     Game playerInAnyGame(Player player);
+    List<GamePlayer> getAllByPlayer(Player player);
 }

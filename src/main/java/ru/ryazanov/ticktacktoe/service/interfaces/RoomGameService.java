@@ -10,5 +10,5 @@ public interface RoomGameService {
     boolean isCurrentPlayerPlay();
     Game createNewGame();
     Game get(Integer gameId);
-    Game playerInGame();
+    List<Game> getFinishedGames();
 }

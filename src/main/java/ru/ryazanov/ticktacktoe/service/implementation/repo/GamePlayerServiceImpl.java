@@ -74,4 +74,9 @@ public class GamePlayerServiceImpl implements GamePlayerService {
         return gamePlayer.getGame();
 
     }
+
+    @Override
+    public List<GamePlayer> getAllByPlayer(Player player) {
+        return gamePlayerRepository.findByPlayer(player);
+    }
 }

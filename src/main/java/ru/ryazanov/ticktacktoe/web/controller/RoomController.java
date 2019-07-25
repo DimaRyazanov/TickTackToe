@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.ryazanov.ticktacktoe.model.Game;
 import ru.ryazanov.ticktacktoe.service.interfaces.RoomGameService;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -42,5 +41,10 @@ public class RoomController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Game getGameProperties(@PathVariable Integer id) {
         return roomGameService.get(id);
+    }
+
+    @RequestMapping(value = "/finish_games", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Game> getFinishedGames() {
+        return roomGameService.getFinishedGames();
     }
 }

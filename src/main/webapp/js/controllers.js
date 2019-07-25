@@ -267,8 +267,12 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
 roomController.controller('roomController', ['$rootScope', '$scope', '$http', '$location', '$interval',
     function (rootScope, scope, http, location, interval) {
         getCurrentPlayer();
-        isCurrentPlayerInGame();
-        getRegistrationGames();
+
+        var timerUpdate = interval(function () {
+            isCurrentPlayerInGame();
+            getRegistrationGames();
+            getFinishedGames();
+        }, 500);
 
         function getRegistrationGames() {
             http.get('/api/room/games')
@@ -277,6 +281,18 @@ roomController.controller('roomController', ['$rootScope', '$scope', '$http', '$
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load current games " + response.status;
+                    stopTimer();
+                });
+        }
+
+        function getFinishedGames() {
+            http.get('/api/room/finish_games')
+                .then(function onSuccess(response) {
+                    scope.gameHistory = response.data;
+                })
+                .catch(function onError(response) {
+                    scope.errorMessage = "Failed to load finished games " + response.status;
+                    stopTimer();
                 });
         }
 
@@ -287,6 +303,7 @@ roomController.controller('roomController', ['$rootScope', '$scope', '$http', '$
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load current user " + response.status;
+                    stopTimer();
                 });
         }
 
@@ -297,6 +314,7 @@ roomController.controller('roomController', ['$rootScope', '$scope', '$http', '$
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load in game status " + response.status;
+                    stopTimer();
                 });
         }
 
@@ -307,8 +325,9 @@ roomController.controller('roomController', ['$rootScope', '$scope', '$http', '$
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to join in game " + response.status;
+                    stopTimer();
                 });
-        }
+        };
 
         scope.createGame = function createGame() {
             var count_players = 2;
@@ -323,7 +342,17 @@ roomController.controller('roomController', ['$rootScope', '$scope', '$http', '$
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to create game " + response.status;
+                    stopTimer();
                     location.path('/room');
                 });
+        };
+
+        scope.seeHistory = function (gameId) {
+            rootScope.gameId = gameId;
+            location.path('/game/' + rootScope.gameId);
+        };
+
+        function stopTimer() {
+            interval.cancel(timerUpdate);
         }
     }]);
