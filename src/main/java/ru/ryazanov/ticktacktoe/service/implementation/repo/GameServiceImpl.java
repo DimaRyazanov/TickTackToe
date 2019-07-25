@@ -30,7 +30,7 @@ public class GameServiceImpl implements GameService {
      */
     @Override
     public Game get(final int gameId) {
-        return gameRepository.getOne(gameId);
+        return gameRepository.findById(gameId).get();
     }
 
     /**

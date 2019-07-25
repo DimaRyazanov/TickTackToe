@@ -17,4 +17,5 @@ public interface GamePlayerService {
     int getLastPosition(Game game);
     boolean isPlayerInGame(Game game, Player player);
     void add(GamePlayer gamePlayer);
+    Game playerInAnyGame(Player player);
 }

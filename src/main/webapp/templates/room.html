@@ -7,11 +7,15 @@
             <div class="card">
                 <div class="card-header">Список доступных игр</div>
                 <div class="card-body">
-                    <div ng-if="isHost">
+                    <div ng-if="inGame">
                         <div class="alert alert-success" role="alert">
-                            Вы уже создали игру!
+                            Вы уже в игре или создали игру!
                         </div>
                     </div>
+                    <button ng-if="!inGame" type="button" class="btn btn-primary" ng-click="createGame()">
+                        Создать
+                    </button>
+                    <br />
                     <br />
                     <h5>Набор игроков</h5>
                     <div class="listGames">
@@ -33,7 +37,7 @@
                                     <td>{{game.playerCreator.userName}}</td>
                                     <td>{{game.countPlayers}}</td>
                                     <td>
-                                        <button ng-if="!isHost" type="button" class="btn btn-primary" ng-click="joinGame(game.id)">
+                                        <button ng-if="!inGame" type="button" class="btn btn-primary" ng-click="joinGame(game.id)">
                                             Вступить
                                         </button>
                                     </td>
@@ -83,6 +87,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <br/>
+        <div ng-if="errorMessage.length > 0" class="alert alert-danger" role="alert">
+            {{errorMessage}}
         </div>
     </div>
 </div>

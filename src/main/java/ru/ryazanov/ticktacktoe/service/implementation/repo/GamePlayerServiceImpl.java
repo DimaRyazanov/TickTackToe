@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.ryazanov.ticktacktoe.model.Game;
 import ru.ryazanov.ticktacktoe.model.GamePlayer;
 import ru.ryazanov.ticktacktoe.model.Player;
+import ru.ryazanov.ticktacktoe.model.modelenum.GameStatus;
 import ru.ryazanov.ticktacktoe.repository.GamePlayerRepository;
 import ru.ryazanov.ticktacktoe.service.interfaces.repo.GamePlayerService;
 
@@ -59,5 +60,18 @@ public class GamePlayerServiceImpl implements GamePlayerService {
     @Override
     public void add(GamePlayer gamePlayer) {
         gamePlayerRepository.save(gamePlayer);
+    }
+
+    @Override
+    public Game playerInAnyGame(Player player) {
+        GamePlayer gamePlayer = gamePlayerRepository.findByPlayer(player).stream()
+                .filter(x -> x.getGame().getStatus() == GameStatus.REGISTRATION
+                        || x.getGame().getStatus() == GameStatus.PROGRESS)
+                .findFirst().orElse(null);
+        if (gamePlayer == null)
+            return null;
+
+        return gamePlayer.getGame();
+
     }
 }

@@ -11,9 +11,10 @@ import ru.ryazanov.ticktacktoe.service.interfaces.repo.GamePlayerService;
 import ru.ryazanov.ticktacktoe.service.interfaces.repo.GameService;
 import ru.ryazanov.ticktacktoe.service.interfaces.repo.PlayerService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static ru.ryazanov.ticktacktoe.util.EntityUtil.SYMBOLS;
+import static ru.ryazanov.ticktacktoe.util.EntityUtil.*;
 
 @Service
 public class RoomGameServiceImpl implements RoomGameService {
@@ -49,4 +50,29 @@ public class RoomGameServiceImpl implements RoomGameService {
         gamePlayerService.add(new GamePlayer(currentGame,
                 playerService.getLoggedPlayer(), position, SYMBOLS.get(position)));
     }
+
+    @Override
+    public boolean isCurrentPlayerPlay() {
+        return gamePlayerService.playerInAnyGame(playerService.getLoggedPlayer()) != null;
+    }
+
+    @Override
+    public Game playerInGame() {
+        return gamePlayerService.playerInAnyGame(playerService.getLoggedPlayer());
+    }
+
+    @Override
+    public Game createNewGame() {
+        Game game = new Game(LocalDateTime.now(), playerService.getLoggedPlayer(), GameStatus.REGISTRATION, MIN_PLAYERS);
+        gameService.save(game);
+        gamePlayerService.add(new GamePlayer(game, playerService.getLoggedPlayer(), MIN_POSITION, SYMBOLS.get(MIN_POSITION)));
+        return game;
+    }
+
+    @Override
+    public Game get(Integer gameId) {
+        return gameService.get(gameId);
+    }
+
+
 }

@@ -13,9 +13,8 @@ import ru.ryazanov.ticktacktoe.to.GamePlayerTO;
 import ru.ryazanov.ticktacktoe.to.MoveTO;
 import ru.ryazanov.ticktacktoe.to.PlayerTO;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
-
-import static ru.ryazanov.ticktacktoe.util.EntityUtil.GAME;
 
 @RestController
 @RequestMapping("/api/game")
@@ -31,16 +30,19 @@ public class GameBoardController {
      */
     private final MoveInGameService moveInGameService;
 
+    private final HttpSession httpSession;
+
     /**
      * Inject service implementation.
-     *
-     * @param observerInGameService - Impl ObserverInGameService.
+     *  @param observerInGameService - Impl ObserverInGameService.
      * @param moveInGameService     - Impl MoveInGameService.
+     * @param httpSession
      */
     public GameBoardController(final ObserverInGameService observerInGameService,
-                               final MoveInGameService moveInGameService) {
+                               final MoveInGameService moveInGameService, HttpSession httpSession) {
         this.observerInGameService = observerInGameService;
         this.moveInGameService = moveInGameService;
+        this.httpSession = httpSession;
     }
 
     /**
@@ -62,7 +64,8 @@ public class GameBoardController {
     @RequestMapping(value = "/creator", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PlayerTO getPlayerCreator() {
-        return observerInGameService.getPlayerCreator(GAME.getId());
+        int gameId = (Integer) httpSession.getAttribute("gameId");
+        return observerInGameService.getPlayerCreator(gameId);
     }
 
     /**
@@ -73,8 +76,9 @@ public class GameBoardController {
     @RequestMapping(value = "/turn", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PlayerTO getPlayerTurn() {
-        return observerInGameService.getPlayerTurn(GAME.getId(),
-                moveInGameService.getLastTurnPlayer(GAME.getId()));
+        int gameId = (Integer) httpSession.getAttribute("gameId");
+        return observerInGameService.getPlayerTurn(gameId,
+                moveInGameService.getLastTurnPlayer(gameId));
     }
 
     /**
@@ -85,7 +89,8 @@ public class GameBoardController {
     @RequestMapping(value = "/moves", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MoveTO> getMoves() {
-        return moveInGameService.getMoves(GAME.getId());
+        int gameId = (Integer) httpSession.getAttribute("gameId");
+        return moveInGameService.getMoves(gameId);
     }
 
     /**
@@ -96,7 +101,8 @@ public class GameBoardController {
     @RequestMapping(value = "/status", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public GameStatus getGameStatus() {
-        return moveInGameService.getGameStatus(GAME.getId());
+        int gameId = (Integer) httpSession.getAttribute("gameId");
+        return moveInGameService.getGameStatus(gameId);
     }
 
     /**
@@ -107,7 +113,8 @@ public class GameBoardController {
     @RequestMapping(value = "/game_players", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<GamePlayerTO> getGamePlayers() {
-        return moveInGameService.getGamePlayers(GAME.getId());
+        int gameId = (Integer) httpSession.getAttribute("gameId");
+        return moveInGameService.getGamePlayers(gameId);
     }
 
     /**
@@ -118,7 +125,8 @@ public class GameBoardController {
      */
     @RequestMapping(value = "/move", method = RequestMethod.POST)
     public CreateMoveTO createMove(@RequestBody final CreateMoveTO createMoveTO) {
-        moveInGameService.createMove(GAME.getId(), createMoveTO,
+        int gameId = (Integer) httpSession.getAttribute("gameId");
+        moveInGameService.createMove(gameId, createMoveTO,
                 observerInGameService.getLoggedPlayer());
         return createMoveTO;
     }
@@ -131,7 +139,8 @@ public class GameBoardController {
      */
     @RequestMapping(value = "/set_status", method = RequestMethod.POST)
     public GameStatus setGameStatus(@RequestBody final GameStatus gameStatus) {
-        moveInGameService.setGameStatus(GAME.getId(), gameStatus);
+        int gameId = (Integer) httpSession.getAttribute("gameId");
+        moveInGameService.setGameStatus(gameId, gameStatus);
         return gameStatus;
     }
 }

@@ -3,7 +3,7 @@ var applicationRoute = angular.module('applicationRoute', ['ngRoute', 'gameContr
 applicationRoute.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
     $routeProvider.
-        when('/game', {
+        when('/game/:id', {
             templateUrl: '../templates/gameBoard.html',
             controller: 'gameController'
         })

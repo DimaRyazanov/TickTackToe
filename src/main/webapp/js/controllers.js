@@ -1,14 +1,14 @@
 var gameController = angular.module('gameController', []);
 var roomController = angular.module('roomController', []);
 
-gameController.controller('gameController', ['$scope', '$http', '$interval',
-    function (scope, http, interval) {
+gameController.controller('gameController', ['$scope', '$http', '$interval', '$routeParams', '$location',
+    function (scope, http, interval, routeParams, location) {
 
         getGameStatus();
-
-        if (isEndGame()){
+        getInitGame();
+        if (isEndGame()) {
             initFirstData();
-        }else{
+        } else {
             initFirstData();
             getCreator();
             getCurrentPlayer();
@@ -35,6 +35,17 @@ gameController.controller('gameController', ['$scope', '$http', '$interval',
             getMoves();
             getGamePlayers();
             getGameStatus();
+        }
+
+        function getInitGame() {
+            http.get('/api/room/' + routeParams.id)
+                .then(function onSuccess(response) {
+                    scope.gameProperties = response.data;
+                })
+                .catch(function onError(response) {
+                    location.path('/room');
+                    scope.errorMessage = "Failed to load game properties " + response.status;
+                });
         }
 
         function isEndGame() {
@@ -64,7 +75,7 @@ gameController.controller('gameController', ['$scope', '$http', '$interval',
         function getCurrentPlayer() {
             http.get('/api/game/current')
                 .then(function onSuccess(response) {
-                scope.currentPlayer = response.data;
+                    scope.currentPlayer = response.data;
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load current user " + response.status;
@@ -225,21 +236,16 @@ gameController.controller('gameController', ['$scope', '$http', '$interval',
         }
     }]);
 
-roomController.controller('roomController', ['$scope', '$http', '$interval',
-    function (scope, http, interval) {
+roomController.controller('roomController', ['$rootScope', '$scope', '$http', '$location', '$interval',
+    function (rootScope, scope, http, location, interval) {
         getCurrentPlayer();
+        isCurrentPlayerInGame();
         getRegistrationGames();
 
         function getRegistrationGames() {
             http.get('/api/room/games')
                 .then(function onSuccess(response) {
                     scope.games = response.data;
-                    scope.isHost = false;
-                    angular.forEach(scope.games, function (game) {
-                        if (game.playerCreator.id === scope.currentPlayer.id){
-                            scope.isHost = true;
-                        }
-                    })
                 })
                 .catch(function onError(response) {
                     scope.errorMessage = "Failed to load current games " + response.status;
@@ -256,7 +262,40 @@ roomController.controller('roomController', ['$scope', '$http', '$interval',
                 });
         }
 
-        scope.joinGame = function joinGame(gameId) {
-            http.post('/api/room/join_game', JSON.stringify(gameId), {headers: {'Content-Type': 'application/json; charset=UTF-8'}});
+        function isCurrentPlayerInGame() {
+            http.get('/api/room/in_game')
+                .then(function onSuccess(response) {
+                    scope.inGame = response.data;
+                })
+                .catch(function onError(response) {
+                    scope.errorMessage = "Failed to load in game status " + response.status;
+                });
         }
-}]);
+
+        scope.joinGame = function joinGame(gameId) {
+            http.post('/api/room/join_game', JSON.stringify(gameId), {headers: {'Content-Type': 'application/json; charset=UTF-8'}})
+                .then(function onSuccess() {
+                    location.path('/game/' + gameId);
+                })
+                .catch(function onError(response) {
+                    scope.errorMessage = "Failed to join in game " + response.status;
+                });
+        }
+
+        scope.createGame = function createGame() {
+            var count_players = 2;
+            http.post("/api/room/create", JSON.stringify(count_players), {
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            })
+                .then(function onSuccess(response) {
+                    rootScope.gameId = response.data.id;
+                    location.path('/game/' + rootScope.gameId);
+                })
+                .catch(function onError(response) {
+                    scope.errorMessage = "Failed to create game " + response.status;
+                    location.path('/room');
+                });
+        }
+    }]);

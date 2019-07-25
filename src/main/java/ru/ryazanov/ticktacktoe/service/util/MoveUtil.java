@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import static ru.ryazanov.ticktacktoe.util.EntityUtil.GAME_SIZE;
+
 public final class MoveUtil {
 
     private MoveUtil() {
@@ -24,6 +26,7 @@ public final class MoveUtil {
      * @return boolean finish.
      */
     public static boolean isFinishGame(final List<Move> moves, final int size) {
+
         List<Position> positions = moves
                 .stream()
                 .map(x -> new Position(x.getCellRow(), x.getCellColumn()))

@@ -115,7 +115,7 @@ public class MoveInGameServiceImpl implements MoveInGameService {
     @Override
     public List<MoveTO> getMoves(final int gameId) {
         Map<Integer, Character> settings = gamePlayerService.getAllByGame(gameService.get(gameId))
-                .stream().collect(Collectors.toMap(GamePlayer::getId, GamePlayer::getSymbol));
+                .stream().collect(Collectors.toMap(x -> x.getPlayer().getId(), GamePlayer::getSymbol));
         List<Move> moves = moveService.findByGame(gameService.get(gameId));
         return moves.stream().map(x -> new MoveTO(x.getId(), x.getCellRow(), x.getCellColumn(),
                 settings.get(x.getPlayer().getId()), x.getPlayer().getUserName()))
@@ -139,9 +139,8 @@ public class MoveInGameServiceImpl implements MoveInGameService {
                 createMoveTO.getCellColumn(),
                 LocalDateTime.now()));
         List<Move> moves = moveService.findByGameAndPlayer(currentGame, player);
-        boolean isFinish = MoveUtil.isFinishGame(moves, GAME_SIZE);
-
-        if (isFinish) {
+        boolean isFullMoves = moveService.findByGame(currentGame).size() >= (GAME_SIZE * GAME_SIZE);
+        if (isFullMoves || MoveUtil.isFinishGame(moves, GAME_SIZE)) {
             currentGame.setStatus(GameStatus.FINISH);
             gameService.save(currentGame);
         }
