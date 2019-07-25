@@ -3,6 +3,9 @@ package ru.ryazanov.ticktacktoe.to;
 import javax.validation.constraints.NotNull;
 
 public class CreateMoveTO {
+
+    private int gameId;
+
     /**
      * Row (Y coord.) move. Combine with column move.
      * Not null.
@@ -28,8 +31,10 @@ public class CreateMoveTO {
      * @param cellRow - row move.
      * @param cellColumn - column row.
      */
-    public CreateMoveTO(@NotNull final int cellRow,
+    public CreateMoveTO(@NotNull final int gameId,
+                        @NotNull final int cellRow,
                         final @NotNull int cellColumn) {
+        this.gameId = gameId;
         this.cellRow = cellRow;
         this.cellColumn = cellColumn;
     }
@@ -64,5 +69,9 @@ public class CreateMoveTO {
      */
     public void setCellColumn(final int cellColumn) {
         this.cellColumn = cellColumn;
+    }
+
+    public int getGameId() {
+        return gameId;
     }
 }

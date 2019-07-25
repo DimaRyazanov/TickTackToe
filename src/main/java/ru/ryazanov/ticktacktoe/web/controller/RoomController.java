@@ -13,12 +13,9 @@ import java.util.List;
 public class RoomController {
 
     private final RoomGameService roomGameService;
-    private final HttpSession httpSession;
 
-    public RoomController(final RoomGameService roomGameService,
-                          final HttpSession httpSession) {
+    public RoomController(final RoomGameService roomGameService) {
         this.roomGameService = roomGameService;
-        this.httpSession = httpSession;
     }
 
     @RequestMapping(value = "/games", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,23 +31,16 @@ public class RoomController {
     @RequestMapping(value = "/join_game", method = RequestMethod.POST)
     public int joinToGame(@RequestBody final int gameId) {
         roomGameService.joinToGame(gameId);
-        httpSession.setAttribute("gameId", gameId);
         return gameId;
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Game createGame(@RequestBody final int count_players) {
-        Game game = roomGameService.createNewGame();
-        httpSession.setAttribute("gameId", game.getId());
-        return game;
+        return roomGameService.createNewGame();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Game getGameProperties(@PathVariable Integer id) {
-        Game playerInGame = roomGameService.playerInGame();
-        if (playerInGame != null && id == playerInGame.getId()) {
-            httpSession.setAttribute("gameId", id);
-        }
         return roomGameService.get(id);
     }
 }

@@ -124,16 +124,14 @@ public class MoveInGameServiceImpl implements MoveInGameService {
 
     /**
      * Create new move player.
-     * @param gameId - int id game.
      * @param createMoveTO - new move.
      * @param player - player who move.
      */
     @Override
     @Transactional
-    public void createMove(final int gameId,
-                           final CreateMoveTO createMoveTO, final Player player) {
-        Game currentGame = gameService.get(gameId);
-        moveService.save(new Move(gameService.get(gameId),
+    public void createMove(final CreateMoveTO createMoveTO, final Player player) {
+        Game currentGame = gameService.get(createMoveTO.getGameId());
+        moveService.save(new Move(gameService.get(createMoveTO.getGameId()),
                 player,
                 createMoveTO.getCellRow(),
                 createMoveTO.getCellColumn(),

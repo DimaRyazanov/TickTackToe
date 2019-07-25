@@ -46,9 +46,8 @@ public interface MoveInGameService {
 
     /**
      * Create new move player.
-     * @param gameId - int id game.
      * @param createMoveTO - new move.
      * @param player - player who move.
      */
-    void createMove(int gameId, CreateMoveTO createMoveTO, Player player);
+    void createMove(CreateMoveTO createMoveTO, Player player);
 }

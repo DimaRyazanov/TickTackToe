@@ -84,7 +84,11 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
         }
 
         function getPlayerTurn() {
-            http.get('/api/game/turn')
+            http({
+                url: '/api/game/turn',
+                method: "GET",
+                params: {gameId: routeParams.id}
+            })
                 .then(function onSuccess(response) {
                     scope.playerTurn = response.data;
                 })
@@ -95,7 +99,11 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
         }
 
         function getMoves() {
-            http.get('/api/game/moves')
+            http({
+                url: '/api/game/moves',
+                method: "GET",
+                params: {gameId: routeParams.id}
+            })
                 .then(function onSuccess(response) {
                     scope.moves = response.data;
                     angular.forEach(scope.moves, function (field) {
@@ -129,7 +137,11 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
         }
 
         function getCreator() {
-            http.get('/api/game/creator')
+            http({
+                url: '/api/game/creator',
+                method: "GET",
+                params: {gameId: routeParams.id}
+            })
                 .then(function onSuccess(response) {
                     scope.creator = response.data;
                 })
@@ -140,7 +152,11 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
         }
 
         function getGamePlayers() {
-            http.get('/api/game/game_players')
+            http({
+                url: '/api/game/game_players',
+                method: "GET",
+                params: {gameId: routeParams.id}
+            })
                 .then(function onSuccess(response) {
                     scope.gamePlayers = response.data;
                     scope.isMoreOnePlayer = scope.gamePlayers.length > 1;
@@ -152,7 +168,11 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
         }
 
         function getGameStatus() {
-            http.get('/api/game/status')
+            http({
+                url: '/api/game/status',
+                method: "GET",
+                params: {gameId: routeParams.id}
+            })
                 .then(function onSuccess(response) {
                     scope.gameStatus = response.data;
                 })
@@ -163,7 +183,13 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
         }
 
         function setStatus(status) {
-            http.post('/api/game/set_status', JSON.stringify(status), {headers: {'Content-Type': 'application/json; charset=UTF-8'}});
+            var param = {gameStatus: status, gameId: routeParams.id};
+            http({
+                url: '/api/game/set_status',
+                method: "POST",
+                data: JSON.stringify(param),
+                headers: {'Content-Type': 'application/json; charset=UTF-8'}
+            });
         }
 
         scope.canStartGame = function () {
@@ -187,7 +213,9 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
                     if (scope.currentPlayer.id === scope.playerTurn.id) {
                         var cellRow = parseInt(cell.id.charAt(0));
                         var cellColumn = parseInt(cell.id.charAt(1));
-                        var move = {'cellRow': cellRow, 'cellColumn': cellColumn};
+                        var move = {'gameId' : routeParams.id,
+                                    'cellRow': cellRow,
+                                    'cellColumn': cellColumn};
 
                         http.post('/api/game/move', JSON.stringify(move), {headers: {'Content-Type': 'application/json; charset=UTF-8'}})
                             .then(function successCallback(response) {
