@@ -128,4 +128,9 @@ public class GameBoardController {
         moveInGameService.setGameStatus(gameStatus.getGameId(), gameStatus.getGameStatus());
         return gameStatus.getGameStatus();
     }
+
+    @RequestMapping(value = "/board_size", method = RequestMethod.GET)
+    public int getFieldSize(final int gameId) {
+        return moveInGameService.getGame(gameId).getFieldSize();
+    }
 }

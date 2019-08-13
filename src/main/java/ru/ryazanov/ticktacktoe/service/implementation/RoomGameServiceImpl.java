@@ -58,8 +58,11 @@ public class RoomGameServiceImpl implements RoomGameService {
     }
 
     @Override
-    public Game createNewGame() {
-        Game game = new Game(LocalDateTime.now(), playerService.getLoggedPlayer(), GameStatus.REGISTRATION, MIN_PLAYERS);
+    public Game createNewGame(int countPlayers, int fieldSize, int winLength) {
+        Game game = new Game(LocalDateTime.now(), playerService.getLoggedPlayer(),
+                GameStatus.REGISTRATION, MIN_PLAYERS > countPlayers ? MIN_PLAYERS : countPlayers,
+                MIN_GAME_SIZE > fieldSize ? MIN_GAME_SIZE : fieldSize,
+                MIN_WIN_LENGTH > winLength ? MIN_WIN_LENGTH : winLength);
         gameService.save(game);
         gamePlayerService.add(new GamePlayer(game, playerService.getLoggedPlayer(), MIN_POSITION, SYMBOLS.get(MIN_POSITION)));
         return game;

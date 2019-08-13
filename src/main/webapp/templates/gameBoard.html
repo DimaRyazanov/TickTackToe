@@ -12,7 +12,7 @@
                         <div class="tableContainer">
                             <div class="gameTable">
                                 <div ng-repeat="field in fields" class="tableRow">
-                                    <div ng-repeat="cell in field" class="{{cell.class}}" id="{{cell.id}}">
+                                    <div ng-repeat="cell in field" class="{{cell.class}}" id="{{cell.id}}" ng-style="boxSize">
                                         <div ng-click="clickPlayerMove(cell)" class="boxContent{{cell.letter}}"></div>
                                     </div>
                                 </div>

@@ -3,7 +3,6 @@ var roomController = angular.module('roomController', []);
 
 gameController.controller('gameController', ['$scope', '$http', '$interval', '$routeParams', '$location',
     function (scope, http, interval, routeParams, location) {
-
         getGameStatus();
         getInitGame();
         if (isEndGame()) {
@@ -117,23 +116,28 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
         }
 
         function initializationFields() {
-            scope.fields = [
-                [
-                    {'id': '00', 'letter': '', 'class': 'box'},
-                    {'id': '01', 'letter': '', 'class': 'box'},
-                    {'id': '02', 'letter': '', 'class': 'box'}
-                ],
-                [
-                    {'id': '10', 'letter': '', 'class': 'box'},
-                    {'id': '11', 'letter': '', 'class': 'box'},
-                    {'id': '12', 'letter': '', 'class': 'box'}
-                ],
-                [
-                    {'id': '20', 'letter': '', 'class': 'box'},
-                    {'id': '21', 'letter': '', 'class': 'box'},
-                    {'id': '22', 'letter': '', 'class': 'box'}
-                ]
-            ];
+            http({
+                url: '/api/game/board_size',
+                method: "GET",
+                params: {gameId: routeParams.id}
+            })
+                .then(function onSuccess(response) {
+                    var size = response.data;
+                    scope.boxSize = {"width": "20%"};
+                    var fields = [];
+                    for (var i = 0; i < size; i++) {
+                        fields[i] = [];
+                        for (var j = 0; j < size; j++) {
+                            fields[i][j] = {'id': i + '' + j, 'letter': '', 'class': 'box'};
+                        }
+                    }
+
+                    scope.fields = fields;
+                })
+                .catch(function onError(response) {
+                    scope.errorMessage = "Failed to load game size " + response.status;
+                    setStatus("ERROR");
+                });
         }
 
         function getCreator() {
@@ -193,14 +197,14 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
         }
 
         scope.canStartGame = function () {
-            if (isRegistrationGame())
+            if (isRegistrationGame() && scope.creator != undefined && scope.currentPlayer != undefined)
                 return (scope.creator.id === scope.currentPlayer.id) && scope.isMoreOnePlayer;
             else
                 return false;
         };
 
         scope.canCancelGame = function () {
-            if (isStartGame())
+            if (isStartGame() && scope.creator != undefined && scope.currentPlayer != undefined)
                 return scope.creator.id === scope.currentPlayer.id;
             else
                 return false;
@@ -213,9 +217,11 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
                     if (scope.currentPlayer.id === scope.playerTurn.id) {
                         var cellRow = parseInt(cell.id.charAt(0));
                         var cellColumn = parseInt(cell.id.charAt(1));
-                        var move = {'gameId' : routeParams.id,
-                                    'cellRow': cellRow,
-                                    'cellColumn': cellColumn};
+                        var move = {
+                            'gameId': routeParams.id,
+                            'cellRow': cellRow,
+                            'cellColumn': cellColumn
+                        };
 
                         http.post('/api/game/move', JSON.stringify(move), {headers: {'Content-Type': 'application/json; charset=UTF-8'}})
                             .then(function successCallback(response) {
@@ -235,27 +241,15 @@ gameController.controller('gameController', ['$scope', '$http', '$interval', '$r
 
         scope.clickStartGame = function () {
             if (isRegistrationGame()) {
-                setStatus("PROGRESS")
-                    .then(function successCallback(response) {
-                        getGameStatus();
-                    })
-                    .catch(function errorCallback(response) {
-                        scope.errorMessage = "Can't start game " + response.status;
-                        setStatus("ERROR");
-                    });
+                setStatus("PROGRESS");
+                getGameStatus();
             }
         };
 
         scope.clickCancelGame = function () {
             if (isStartGame()) {
-                setStatus("CANCEL")
-                    .then(function successCallback(response) {
-                        getGameStatus();
-                    })
-                    .catch(function errorCallback(response) {
-                        scope.errorMessage = "Can't cancel game " + response.status;
-                        setStatus("ERROR");
-                    });
+                setStatus("CANCEL");
+                getGameStatus();
             }
         };
 
@@ -330,8 +324,13 @@ roomController.controller('roomController', ['$rootScope', '$scope', '$http', '$
         };
 
         scope.createGame = function createGame() {
-            var count_players = 2;
-            http.post("/api/room/create", JSON.stringify(count_players), {
+            var setting = {
+                'countPlayers': 2,
+                'fieldSize': 5,
+                'winLength': 3
+            };
+
+            http.post("/api/room/create", JSON.stringify(setting), {
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }

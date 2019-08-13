@@ -55,6 +55,13 @@ public class Game {
     @Min(2)
     private int countPlayers;
 
+    @Column(name = "field_size", nullable = false)
+    @Min(3)
+    private int fieldSize;
+
+    @Column(name = "win_length", nullable = false)
+    @Min(3)
+    private int winLength;
     /**
      * Default constructor. Need for Hibernate.
      */
@@ -70,11 +77,14 @@ public class Game {
      * @param countPlayers  - Max players in game.
      */
     public Game(final LocalDateTime created, final Player playerCreator,
-                final GameStatus status, final int countPlayers) {
+                final GameStatus status, final int countPlayers,
+                final int fieldSize, final int winLength) {
         this.created = created;
         this.playerCreator = playerCreator;
         this.status = status;
         this.countPlayers = countPlayers;
+        this.fieldSize = fieldSize;
+        this.winLength = winLength;
     }
 
     /**
@@ -120,6 +130,14 @@ public class Game {
      */
     public GameStatus getStatus() {
         return status;
+    }
+
+    public int getFieldSize() {
+        return fieldSize;
+    }
+
+    public int getWinLength() {
+        return winLength;
     }
 
     /**

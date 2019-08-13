@@ -11,7 +11,6 @@ import ru.ryazanov.ticktacktoe.service.interfaces.repo.GamePlayerService;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.ryazanov.ticktacktoe.util.EntityUtil.MIN_PLAYERS;
 
 @Service
 public class GamePlayerServiceImpl implements GamePlayerService {
@@ -49,7 +48,7 @@ public class GamePlayerServiceImpl implements GamePlayerService {
 
     @Override
     public int getLastPosition(Game game) {
-        return gamePlayerRepository.findByGame(game).stream().mapToInt(GamePlayer::getPosition).max().orElse(MIN_PLAYERS);
+        return gamePlayerRepository.findByGame(game).stream().mapToInt(GamePlayer::getPosition).max().orElse(game.getCountPlayers());
     }
 
     @Override

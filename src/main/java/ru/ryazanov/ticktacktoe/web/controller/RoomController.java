@@ -3,7 +3,9 @@ package ru.ryazanov.ticktacktoe.web.controller;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.ryazanov.ticktacktoe.model.Game;
+import ru.ryazanov.ticktacktoe.service.exeptions.BadSettingGameException;
 import ru.ryazanov.ticktacktoe.service.interfaces.RoomGameService;
+import ru.ryazanov.ticktacktoe.to.GameSettingTO;
 
 import java.util.List;
 
@@ -34,8 +36,14 @@ public class RoomController {
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public Game createGame(@RequestBody final int count_players) {
-        return roomGameService.createNewGame();
+    public Game createGame(@RequestBody final GameSettingTO setting) {
+        if (setting.getWinLength() <= setting.getFieldSize()
+                && setting.getCountPlayers() < setting.getFieldSize()) {
+            return roomGameService.createNewGame(setting.getCountPlayers(),
+                    setting.getFieldSize(), setting.getWinLength());
+        }
+
+        throw new BadSettingGameException();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

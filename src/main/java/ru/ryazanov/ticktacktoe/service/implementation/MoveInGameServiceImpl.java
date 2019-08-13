@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.ryazanov.ticktacktoe.util.EntityUtil.GAME_SIZE;
 
 @Service
 public class MoveInGameServiceImpl implements MoveInGameService {
@@ -137,11 +136,16 @@ public class MoveInGameServiceImpl implements MoveInGameService {
                 createMoveTO.getCellColumn(),
                 LocalDateTime.now()));
         List<Move> moves = moveService.findByGameAndPlayer(currentGame, player);
-        boolean isFullMoves = moveService.findByGame(currentGame).size() >= (GAME_SIZE * GAME_SIZE);
-        if (isFullMoves || MoveUtil.isFinishGame(moves, GAME_SIZE)) {
+        boolean isFullMoves = moveService.findByGame(currentGame).size() >= (currentGame.getFieldSize() * currentGame.getFieldSize());
+        if (isFullMoves || MoveUtil.isFinishGame(moves, currentGame.getWinLength())) {
             currentGame.setStatus(GameStatus.FINISH);
             gameService.save(currentGame);
         }
+    }
+
+    @Override
+    public Game getGame(int gameId) {
+        return gameService.get(gameId);
     }
 
 

@@ -7,8 +7,6 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import static ru.ryazanov.ticktacktoe.util.EntityUtil.GAME_SIZE;
-
 public final class MoveUtil {
 
     private MoveUtil() {
@@ -17,15 +15,15 @@ public final class MoveUtil {
     /**
      * Find finish game or not.
      * Select move. Build vertical, horizontal and 2 diagonal
-     * lines on size length. Check if moves contains coordinates
+     * lines on winLength length. Check if moves contains coordinates
      * of build finish lines. If true, than it finish game.
      * Another - game is not finish.
      *
      * @param moves - list moves in game.
-     * @param size  - length win line.
+     * @param winLength  - length win line.
      * @return boolean finish.
      */
-    public static boolean isFinishGame(final List<Move> moves, final int size) {
+    public static boolean isFinishGame(final List<Move> moves, final int winLength) {
 
         List<Position> positions = moves
                 .stream()
@@ -39,7 +37,7 @@ public final class MoveUtil {
             List<Position> searchPositionDiagonal = new CopyOnWriteArrayList<>();
             List<Position> searchPositionDiagonalTwo = new CopyOnWriteArrayList<>();
 
-            for (int i = 1; i < size; i++) {
+            for (int i = 1; i < winLength; i++) {
                 searchPositionRow.add(new Position(position.row, position.column + i));
                 searchPositionColumn.add(new Position(position.row + i, position.column));
                 searchPositionDiagonal.add(new Position(position.row + i, position.column + i));

@@ -1,5 +1,6 @@
 package ru.ryazanov.ticktacktoe.service.interfaces;
 
+import ru.ryazanov.ticktacktoe.model.Game;
 import ru.ryazanov.ticktacktoe.model.Player;
 import ru.ryazanov.ticktacktoe.model.modelenum.GameStatus;
 import ru.ryazanov.ticktacktoe.to.CreateMoveTO;
@@ -50,4 +51,6 @@ public interface MoveInGameService {
      * @param player - player who move.
      */
     void createMove(CreateMoveTO createMoveTO, Player player);
+
+    Game getGame(int gameId);
 }
